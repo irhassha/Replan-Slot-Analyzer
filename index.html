@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Replan-Slot Analyzer | Smart Stacking</title>
+    <title>Replan-Slot Analyzer </title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
@@ -30,6 +30,8 @@
                         "background-dark": "#0f172a",
                         surface: "#ffffff",
                         "surface-dark": "#1e293b",
+                        input: "#fffbeb", // Amber 50
+                        "input-border": "#fcd34d", // Amber 300
                     },
                     fontFamily: {
                         sans: ['"Plus Jakarta Sans"', "sans-serif"],
@@ -56,8 +58,8 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .slot-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         /* Custom Scrollbar */
@@ -67,10 +69,12 @@
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
+        /* Filter Button Styles */
         .filter-btn-active {
             background-color: #10b981;
             color: white;
             border-color: #10b981;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
         }
         .filter-btn-inactive {
             background-color: white;
@@ -81,6 +85,18 @@
             background-color: #1e293b;
             color: #94a3b8;
             border-color: #334155;
+        }
+
+        /* Multi-select active style */
+        .multi-filter-active {
+            background-color: #3b82f6; /* Blue 500 */
+            color: white;
+            border-color: #3b82f6;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+        }
+        
+        .paste-area {
+            background-image: repeating-linear-gradient(45deg, rgba(251, 191, 36, 0.05) 0px, rgba(251, 191, 36, 0.05) 10px, transparent 10px, transparent 20px);
         }
     </style>
 </head>
@@ -124,141 +140,194 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-12">
         
-        <!-- TOP: DATA VISUALIZATION (Cleaned Up) -->
-        <div class="bg-surface dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 animate-fade-in">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-lg">compare_arrows</span> Comparison Data
-                </h2>
-                <span class="text-xs text-slate-400">Key fields extracted from input</span>
-            </div>
-            <div class="table-wrapper overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
-                <table id="previewTable" class="w-full text-left text-xs">
-                    <thead class="bg-slate-50 dark:bg-slate-800/50">
-                        <tr id="pHead">
-                            <th class="px-4 py-3 font-semibold text-slate-500">Key</th>
-                            <th class="px-4 py-3 font-semibold text-slate-500">Value</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pBody">
-                        <tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- SECTION 1: INPUT & REPLANNING -->
+        <section id="replan-section" class="space-y-8">
             
-            <!-- LEFT COLUMN: INPUT -->
-            <div class="lg:col-span-4 space-y-6">
-                
-                <!-- Input Card -->
-                <div class="bg-surface dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 animate-fade-in" style="animation-delay: 0.1s;">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-lg">edit_note</span> Data Input (TOS)
-                        </h2>
-                        <button onclick="clearInput()" class="text-xs font-medium text-slate-400 hover:text-primary transition-colors">Clear</button>
-                    </div>
-                    
-                    <div class="relative">
-                        <textarea id="rawInput" 
-                            class="w-full h-40 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-xs font-mono focus:ring-2 focus:ring-primary focus:border-primary transition-all resize-none"
-                            placeholder="Paste header and data row here..." oninput="analyze()"></textarea>
-                        <div class="absolute bottom-3 right-3">
-                            <span class="flex h-2 w-2 relative">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                            </span>
-                        </div>
-                    </div>
+            <!-- TOP: DATA VISUALIZATION -->
+            <div class="bg-surface dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 animate-fade-in">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">compare_arrows</span> Comparison Data
+                    </h2>
+                    <span class="text-xs text-slate-400">Live Data</span>
+                </div>
+                <div class="table-wrapper overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                    <table id="previewTable" class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 dark:bg-slate-800/50">
+                            <tr id="pHead">
+                                <th class="px-4 py-3 font-semibold text-slate-500">Key</th>
+                                <th class="px-4 py-3 font-semibold text-slate-500">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pBody">
+                            <tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-                    <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-900/50">
-                        <div class="flex gap-2">
-                            <span class="material-symbols-outlined text-blue-500 text-lg">info</span>
-                            <div class="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
-                                <strong>Logic:</strong> System finds matches in Excel, detects highest occupied tier in a stack, and suggests next available tiers (Max 5).
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- LEFT COLUMN: INPUT -->
+                <div class="lg:col-span-4 space-y-6">
+                    
+                    <!-- Input Card -->
+                    <div class="bg-surface dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 animate-fade-in" style="animation-delay: 0.1s;">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-lg">edit_note</span> Data Input (Dispatcher)
+                            </h2>
+                            <button onclick="clearInput()" class="text-xs font-medium text-slate-400 hover:text-primary transition-colors">Clear</button>
+                        </div>
+                        
+                        <div class="relative group">
+                            <textarea id="rawInput" 
+                                class="paste-area w-full h-40 bg-input dark:bg-yellow-900/10 border-2 border-dashed border-input-border dark:border-yellow-600/50 rounded-xl p-4 text-xs font-mono text-slate-700 dark:text-yellow-100 placeholder-slate-400 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all resize-none shadow-inner"
+                                placeholder="PASTE HEADER & DATA ROW HERE..." oninput="analyze()"></textarea>
+                            
+                            <div class="absolute bottom-3 right-3 pointer-events-none">
+                                <span class="flex items-center gap-1 text-[10px] text-yellow-600 dark:text-yellow-400 font-bold uppercase tracking-wider bg-white/80 dark:bg-black/50 px-2 py-1 rounded backdrop-blur-sm">
+                                    <span class="material-symbols-outlined text-sm">content_paste</span> Paste Here
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-900/50">
+                            <div class="flex gap-2">
+                                <span class="material-symbols-outlined text-blue-500 text-lg">info</span>
+                                <div class="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
+                                    <strong>Logic:</strong> System finds matches in Excel, detects highest occupied tier in a stack, and shows the available tiers (Max 5).
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- History Card -->
+                    <div class="bg-surface dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 animate-fade-in" style="animation-delay: 0.2s;">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-lg">history</span> Selection History
+                            </h2>
+                            <button onclick="clearHistory()" class="text-xs font-medium text-red-400 hover:text-red-500 transition-colors">Reset</button>
+                        </div>
+
+                        <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
+                            <div class="max-h-[400px] overflow-y-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10">
+                                        <tr>
+                                            <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Time</th>
+                                            <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Slot</th>
+                                            <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Info</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historyBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                        <tr>
+                                            <td colspan="3" class="px-4 py-8 text-center text-slate-400 italic">No slots selected yet.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <!-- History Card -->
-                <div class="bg-surface dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 animate-fade-in" style="animation-delay: 0.2s;">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-lg">history</span> Selection History
-                        </h2>
-                        <button onclick="clearHistory()" class="text-xs font-medium text-red-400 hover:text-red-500 transition-colors">Reset</button>
-                    </div>
-
-                    <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
-                        <div class="max-h-[400px] overflow-y-auto">
-                            <table class="w-full text-left text-xs">
-                                <thead class="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10">
-                                    <tr>
-                                        <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Time</th>
-                                        <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Slot</th>
-                                        <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Info</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="historyBody" class="divide-y divide-slate-100 dark:divide-slate-800">
-                                    <tr>
-                                        <td colspan="3" class="px-4 py-8 text-center text-slate-400 italic">No slots selected yet.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- RIGHT COLUMN: RESULTS -->
-            <div class="lg:col-span-8 space-y-6">
-                <div class="bg-surface dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 min-h-[600px] animate-fade-in" style="animation-delay: 0.3s;">
-                    
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 gap-4">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-1">Recommended Slots</h2>
-                            <p class="text-sm text-slate-500">Grouped by Block • Filtered by Compatibility</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800">
-                                TIER &le; 5
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- NEW: BLOCK FILTERS -->
-                    <div id="filterContainer" class="flex flex-wrap gap-2 mb-6 hidden">
-                        <!-- Filters generated by JS -->
-                    </div>
-
-                    <!-- Slot Grid Container -->
-                    <div id="slotDisplay" class="space-y-8">
+                <!-- RIGHT COLUMN: RESULTS -->
+                <div class="lg:col-span-8 space-y-6">
+                    <div class="bg-surface dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 min-h-[600px] animate-fade-in" style="animation-delay: 0.3s;">
                         
-                        <!-- Empty State -->
-                        <div class="flex flex-col items-center justify-center py-20 text-slate-400">
-                            <span class="material-symbols-outlined text-6xl mb-4 text-slate-200 dark:text-slate-700">dns</span>
-                            <p class="text-sm">Waiting for data input...</p>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-1">Recommended Slots</h2>
+                                <p class="text-sm text-slate-500">Grouped by Block • Filtered only the available</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800">
+                                    TIER &le; 5
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- BLOCK FILTERS (Single Select) -->
+                        <div id="filterContainer" class="flex flex-wrap gap-2 mb-6 hidden"></div>
+
+                        <!-- Slot Grid Container -->
+                        <div id="slotDisplay" class="space-y-8">
+                            <div class="flex flex-col items-center justify-center py-20 text-slate-400">
+                                <span class="material-symbols-outlined text-6xl mb-4 text-slate-200 dark:text-slate-700">dns</span>
+                                <p class="text-sm">Waiting for data input...</p>
+                            </div>
                         </div>
 
                     </div>
+                </div>
 
+            </div>
+        </section>
+
+        <!-- SECTION 2: CARRIER DISTRIBUTION ANALYSIS (Updated) -->
+        <section id="carrier-analysis-section" class="border-t border-slate-200 dark:border-slate-800 pt-12 pb-20">
+            <div class="flex flex-col md:flex-row md:items-start justify-between mb-8 gap-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-3xl text-primary">pie_chart</span>
+                        Carrier Export Analysis
+                    </h2>
+                    <p class="text-sm text-slate-500 max-w-lg">
+                        Visualize container density for <strong class="text-slate-700 dark:text-slate-300">Export & Transhipment</strong> moves. 
+                        Calculated capacity: 30 units per Slot.
+                    </p>
+                </div>
+                
+                <!-- Carrier Selector (Buttons) -->
+                <div class="w-full md:w-auto">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Select Carrier Out</label>
+                    <div id="carrierButtonContainer" class="flex flex-wrap gap-2">
+                        <span class="text-xs text-slate-400 italic bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-dashed border-slate-300 dark:border-slate-700">Load file to view carriers...</span>
+                    </div>
                 </div>
             </div>
 
-        </div>
+            <!-- Stats Bar -->
+            <div id="carrierStats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 hidden animate-fade-in">
+                <div class="bg-surface dark:bg-surface-dark p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div class="text-xs text-slate-400 uppercase font-bold">Total Export Units</div>
+                    <div class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="statTotal">0</div>
+                </div>
+                <div class="bg-surface dark:bg-surface-dark p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div class="text-xs text-slate-400 uppercase font-bold">Active Slots</div>
+                    <div class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="statBays">0</div>
+                </div>
+                <div class="bg-surface dark:bg-surface-dark p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm col-span-2 flex flex-col justify-center">
+                    <div class="text-xs text-slate-400 uppercase font-bold mb-1">Capacity Benchmark</div>
+                    <div class="flex items-center gap-4 text-xs font-medium">
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> < 50% Safe</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-yellow-500"></span> 50-80% Moderate</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500"></span> > 80% Heavy</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Carrier Block Filters (Multi-select) -->
+            <div id="carrierBlockFilterContainer" class="flex flex-wrap gap-2 mb-6 hidden"></div>
+
+            <!-- Carrier Grid (Grouped by Block) -->
+            <div id="carrierGridContainer" class="space-y-6">
+                <div class="py-12 text-center text-slate-400 bg-surface dark:bg-surface-dark rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
+                    Select a carrier above to view detailed distribution
+                </div>
+            </div>
+        </section>
 
     </main>
 
     <!-- Footer -->
     <footer class="border-t border-slate-200 dark:border-slate-800 mt-auto bg-white dark:bg-slate-900 py-6">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
-            &copy; 2026 Replan-Slot Analyzer. Optimized for High Performance Logistics.
+            &copy; 2026 Replan-Slot Analyzer. Internal use only. NPCT1 Yard Planning Team.
         </div>
     </footer>
 
@@ -284,7 +353,9 @@
         let selectedFullSlotsHistory = []; 
         let currentMatches = [];
         let currentUnit = "";
-        let activeBlockFilter = 'ALL'; // Default filter
+        let activeBlockFilter = 'ALL'; 
+        let activeCarrier = null;
+        let activeCarrierBlockFilters = new Set(); // For Multi-select in Carrier Analysis
 
         function normalize(str) {
             if (str === undefined || str === null) return "";
@@ -329,6 +400,7 @@
                             let cKey = cleanKey(key);
                             cleanRow[cKey] = normalize(row[key]);
                             if (cKey === 'slotexe') cleanRow['_raw_slot'] = row[key].toString().trim();
+                            if (cKey === 'carrierout') cleanRow['_raw_carrier'] = row[key].toString().trim();
                         }
                         return cleanRow;
                     });
@@ -342,8 +414,9 @@
                     statusEl.classList.remove('text-slate-500');
                     statusEl.classList.add('text-primary');
                     
-                    // Visual feedback
                     gsap.fromTo(btn, {scale: 0.95}, {scale: 1, duration: 0.3, ease: "back.out(2)"});
+                    
+                    initCarrierAnalysis();
                     analyze();
                 } catch (err) {
                     btnLabel.innerText = "Error!";
@@ -355,6 +428,218 @@
             reader.readAsArrayBuffer(file);
         }
 
+        // --- CARRIER ANALYSIS LOGIC ---
+        function initCarrierAnalysis() {
+            const container = document.getElementById('carrierButtonContainer');
+            const carriers = new Set();
+            
+            // Filter: Only Export & Transhipment
+            const validMoves = ['export', 'transhipment', 'tsh'];
+
+            db.forEach(row => {
+                let move = row.move || "";
+                let carrier = row.carrierout || "";
+                
+                if (carrier && carrier !== '-' && validMoves.some(m => move.includes(m))) {
+                    carriers.add(row._raw_carrier || carrier.toUpperCase());
+                }
+            });
+
+            const sortedCarriers = Array.from(carriers).sort();
+            
+            if (sortedCarriers.length === 0) {
+                container.innerHTML = '<span class="text-xs text-red-400 italic">No Export/Transhipment carriers found.</span>';
+                return;
+            }
+
+            let html = "";
+            sortedCarriers.forEach(c => {
+                html += `
+                    <button onclick="selectCarrier('${c}')" 
+                        id="btn-carrier-${normalize(c)}"
+                        class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all filter-btn-inactive hover:border-slate-400 dark:hover:border-slate-500">
+                        ${c}
+                    </button>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Handle Carrier Selection (Single Select)
+        function selectCarrier(selectedCarrier) {
+            // UI Toggle Active State
+            const allBtns = document.querySelectorAll('#carrierButtonContainer button');
+            allBtns.forEach(btn => {
+                btn.className = "px-3 py-1.5 text-xs font-bold rounded-lg border transition-all filter-btn-inactive hover:border-slate-400 dark:hover:border-slate-500";
+            });
+            
+            if (activeCarrier === selectedCarrier) {
+                activeCarrier = null; // Toggle Off
+                document.getElementById('carrierGridContainer').innerHTML = '<div class="py-12 text-center text-slate-400 bg-surface dark:bg-surface-dark rounded-xl border border-dashed border-slate-300 dark:border-slate-700">Select a carrier to view distribution</div>';
+                document.getElementById('carrierStats').classList.add('hidden');
+                document.getElementById('carrierBlockFilterContainer').classList.add('hidden');
+                return;
+            }
+
+            activeCarrier = selectedCarrier;
+            document.getElementById(`btn-carrier-${normalize(selectedCarrier)}`).className = "px-3 py-1.5 text-xs font-bold rounded-lg border transition-all filter-btn-active transform scale-105";
+            
+            // Reset Block Filters for new carrier
+            activeCarrierBlockFilters.clear();
+            renderCarrierAnalysis();
+        }
+
+        // Main Render Function for Carrier Grid
+        function renderCarrierAnalysis() {
+            if (!activeCarrier) return;
+
+            const gridContainer = document.getElementById('carrierGridContainer');
+            const stats = document.getElementById('carrierStats');
+            const blockFilterContainer = document.getElementById('carrierBlockFilterContainer');
+            
+            // Filter DB Data
+            const validMoves = ['export', 'transhipment', 'tsh'];
+            const carrierData = db.filter(row => {
+                let rCarrier = row._raw_carrier || row.carrierout;
+                let rMove = row.move || "";
+                return rCarrier === activeCarrier && validMoves.some(m => rMove.includes(m));
+            });
+
+            // Group by Block -> Bay
+            let blocks = {};
+            let totalUnits = carrierData.length;
+
+            carrierData.forEach(row => {
+                let slot = row._raw_slot || "";
+                if (slot.includes('-')) {
+                    let parts = slot.split('-'); 
+                    if (parts.length >= 2) {
+                        let blockName = parts[0];
+                        let bayKey = parts[1];
+                        
+                        if (!blocks[blockName]) blocks[blockName] = {};
+                        if (!blocks[blockName][bayKey]) blocks[blockName][bayKey] = 0;
+                        blocks[blockName][bayKey]++;
+                    }
+                }
+            });
+
+            // --- RENDER BLOCK FILTERS (Multi-select) ---
+            const availableBlocks = Object.keys(blocks).sort();
+            
+            if (availableBlocks.length > 0) {
+                let filterHtml = `
+                    <button onclick="toggleCarrierBlockFilter('ALL')" 
+                        class="px-3 py-1 text-[10px] font-bold rounded-md border transition-all ${activeCarrierBlockFilters.size === 0 ? 'filter-btn-active' : 'filter-btn-inactive'}">
+                        ALL
+                    </button>
+                `;
+                
+                availableBlocks.forEach(b => {
+                    const isActive = activeCarrierBlockFilters.has(b);
+                    filterHtml += `
+                        <button onclick="toggleCarrierBlockFilter('${b}')" 
+                            class="px-3 py-1 text-[10px] font-bold rounded-md border transition-all ${isActive ? 'multi-filter-active' : 'filter-btn-inactive'}">
+                            ${b}
+                        </button>
+                    `;
+                });
+                
+                blockFilterContainer.innerHTML = filterHtml;
+                blockFilterContainer.classList.remove('hidden');
+            } else {
+                blockFilterContainer.classList.add('hidden');
+            }
+
+            // Stats Update
+            let totalBays = 0;
+            Object.values(blocks).forEach(b => totalBays += Object.keys(b).length);
+            
+            document.getElementById('statTotal').innerText = totalUnits;
+            document.getElementById('statBays').innerText = totalBays;
+            stats.classList.remove('hidden');
+
+            // --- FILTER BLOCKS TO DISPLAY ---
+            let displayBlocks = availableBlocks;
+            if (activeCarrierBlockFilters.size > 0) {
+                displayBlocks = availableBlocks.filter(b => activeCarrierBlockFilters.has(b));
+            }
+
+            if (displayBlocks.length === 0) {
+                 gridContainer.innerHTML = '<div class="py-12 text-center text-slate-400">No blocks selected.</div>';
+                 return;
+            }
+
+            // --- RENDER GRID (Compact Mode) ---
+            let html = "";
+            
+            displayBlocks.forEach(blockName => {
+                let bayData = blocks[blockName];
+                // SORT DESCENDING: Large to Small
+                let sortedBays = Object.keys(bayData).sort((a,b) => b.localeCompare(a, undefined, {numeric: true}));
+                
+                html += `
+                    <div class="animate-carrier-group bg-surface dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm">
+                        <div class="flex items-center gap-2 mb-3 border-b border-slate-100 dark:border-slate-700 pb-2">
+                            <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest">
+                                Block ${blockName}
+                            </h3>
+                            <span class="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 rounded border border-slate-200 dark:border-slate-700">
+                                ${sortedBays.length} Slots
+                            </span>
+                        </div>
+                        
+                        <!-- Ultra Compact Grid: Denser Layout -->
+                        <div class="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 lg:grid-cols-14 gap-1">
+                            ${sortedBays.map(bay => {
+                                let count = bayData[bay];
+                                let percentage = Math.min((count / 30) * 100, 100);
+                                let colorClass = percentage < 50 ? 'bg-emerald-500' : (percentage < 80 ? 'bg-yellow-500' : 'bg-red-500');
+                                
+                                return `
+                                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded border border-slate-100 dark:border-slate-700 p-0.5 flex flex-col gap-0 items-center justify-center hover:shadow-sm transition-all h-full" title="${count} Units in Slot ${bay}">
+                                        <span class="text-[10px] font-bold text-slate-700 dark:text-slate-200 leading-tight">${bay}</span>
+                                        <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden my-0.5">
+                                            <div class="${colorClass} h-full rounded-full" style="width: ${percentage}%"></div>
+                                        </div>
+                                        <span class="text-[9px] font-bold text-slate-500 leading-none">${count}</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            gridContainer.innerHTML = html;
+            
+            gsap.from(".animate-carrier-group", {
+                y: 10,
+                opacity: 0,
+                duration: 0.3,
+                stagger: 0.05,
+                ease: "power2.out",
+                clearProps: "all"
+            });
+        }
+
+        // Toggle Block Filter for Carrier
+        function toggleCarrierBlockFilter(blockName) {
+            if (blockName === 'ALL') {
+                activeCarrierBlockFilters.clear();
+            } else {
+                if (activeCarrierBlockFilters.has(blockName)) {
+                    activeCarrierBlockFilters.delete(blockName);
+                } else {
+                    activeCarrierBlockFilters.add(blockName);
+                }
+            }
+            renderCarrierAnalysis();
+        }
+
+        // --- EXISTING REPLAN LOGIC ---
+        
         function analyze() {
             const text = document.getElementById('rawInput').value.trim();
             if (!text || db.length === 0) {
@@ -366,35 +651,21 @@
             const headers = lines[0].split('\t').map(h => h.trim());
             const values = lines[1] ? lines[1].split('\t').map(v => v.trim()) : [];
 
-            // --- NEW PREVIEW LOGIC: Only show Key Comparison Fields ---
+            // Update Preview Table
             const targetKeys = ['Unit', 'Service Out', 'Carrier Out', 'SPOD', 'Unit length', 'Wt. cl.', 'Cont. type', 'Unit height'];
-            let previewHeadHtml = "";
-            let previewBodyHtml = "";
-
-            // Use grid layout instead of standard table for better readability of comparisons
             let gridContent = "";
-            
             targetKeys.forEach(key => {
                 const idx = headers.indexOf(key);
                 const val = idx !== -1 ? values[idx] : "-";
-                
-                // Styling for values
                 gridContent += `
                     <div class="flex flex-col p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700">
                         <span class="text-[10px] uppercase font-bold text-slate-400 mb-1">${key}</span>
                         <span class="text-sm font-mono font-medium text-slate-700 dark:text-slate-200 truncate" title="${val}">${val}</span>
-                    </div>
-                `;
+                    </div>`;
             });
+            document.getElementById('previewTable').parentElement.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-4 gap-3">${gridContent}</div>`;
 
-            // Replace table structure with grid
-            document.getElementById('previewTable').parentElement.innerHTML = `
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    ${gridContent}
-                </div>
-            `;
-
-            // Core Extraction for Logic
+            // Logic
             const findVal = (name) => {
                 const cleanName = cleanKey(name);
                 const idx = headers.findIndex(h => cleanKey(h) === cleanName);
@@ -413,7 +684,6 @@
                 height: findVal("Unit height")
             };
 
-            // Filter Excel
             currentMatches = db.filter(item => {
                 const matchSvc = item.serviceout === target.svc;
                 const matchCarr = item.carrierout === target.carr;
@@ -447,16 +717,13 @@
                 return;
             }
 
-            // Group by Base Slot -> Find Max Occupied
             let stackInfo = {};
-
             currentMatches.forEach(m => {
                 let fullSlotRaw = (m._raw_slot || "").trim();
                 if (fullSlotRaw.includes('-')) {
                     let p = fullSlotRaw.split('-');
                     let tier = parseInt(p.pop());
                     let base = p.join('-'); 
-                    
                     if (!isNaN(tier)) {
                         if (!stackInfo[base]) stackInfo[base] = 0;
                         if (tier > stackInfo[base]) stackInfo[base] = tier;
@@ -464,7 +731,6 @@
                 }
             });
 
-            // Generate Available Tiers & Identify Blocks
             let stacks = []; 
             const usedFullSlots = new Set(selectedFullSlotsHistory.map(h => h.fullSlot.trim()));
 
@@ -482,13 +748,7 @@
                 if (availableTiers.length > 0) {
                     let parts = base.split('-');
                     let blockId = parts.length > 0 ? parts[0] : "Other";
-
-                    stacks.push({
-                        base: base,
-                        block: blockId,
-                        tiers: availableTiers,
-                        occupied: maxOccupied
-                    });
+                    stacks.push({ base: base, block: blockId, tiers: availableTiers, occupied: maxOccupied });
                 }
             });
 
@@ -502,40 +762,21 @@
                 return;
             }
 
-            // --- FILTER LOGIC ---
-            // 1. Get unique blocks
             const blocks = [...new Set(stacks.map(s => s.block))].sort();
             
-            // 2. Render Filter Buttons
             if (blocks.length > 0) {
-                let filterHtml = `
-                    <button onclick="setFilter('ALL')" 
-                        class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${activeBlockFilter === 'ALL' ? 'filter-btn-active' : 'filter-btn-inactive'}">
-                        ALL
-                    </button>
-                `;
-                
+                let filterHtml = `<button onclick="setFilter('ALL')" class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${activeBlockFilter === 'ALL' ? 'filter-btn-active' : 'filter-btn-inactive'}">ALL</button>`;
                 blocks.forEach(b => {
-                    filterHtml += `
-                        <button onclick="setFilter('${b}')" 
-                            class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${activeBlockFilter === b ? 'filter-btn-active' : 'filter-btn-inactive'}">
-                            ${b}
-                        </button>
-                    `;
+                    filterHtml += `<button onclick="setFilter('${b}')" class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${activeBlockFilter === b ? 'filter-btn-active' : 'filter-btn-inactive'}">${b}</button>`;
                 });
-                
                 filterContainer.innerHTML = filterHtml;
                 filterContainer.classList.remove('hidden');
             }
 
-            // 3. Apply Filter
             const displayBlocks = activeBlockFilter === 'ALL' ? blocks : blocks.filter(b => b === activeBlockFilter);
-
-            // --- RENDER SLOTS ---
             let html = "";
             
             displayBlocks.forEach(blockName => {
-                // Filter stacks for this block
                 const blockStacks = stacks.filter(s => s.block === blockName).sort((a,b) => a.base.localeCompare(b.base));
                 if (blockStacks.length === 0) return;
 
@@ -543,49 +784,29 @@
                     <div class="animate-block-group">
                         <div class="flex items-center gap-2 mb-3 mt-2">
                             <span class="h-2 w-2 rounded-full bg-primary"></span>
-                            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest">
-                                Block ${blockName}
-                            </h3>
-                            <span class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
-                                ${blockStacks.length} Stacks
-                            </span>
+                            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest">Block ${blockName}</h3>
+                            <span class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">${blockStacks.length} Stacks</span>
                         </div>
-                        
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                             ${blockStacks.map(stack => `
                                 <div class="slot-card bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3 flex flex-col gap-2 relative overflow-hidden group">
-                                    <div class="absolute top-0 right-0 p-1 opacity-10 group-hover:opacity-20 transition-opacity">
-                                        <span class="material-symbols-outlined text-4xl">inventory_2</span>
-                                    </div>
-                                    
+                                    <div class="absolute top-0 right-0 p-1 opacity-10 group-hover:opacity-20 transition-opacity"><span class="material-symbols-outlined text-4xl">inventory_2</span></div>
                                     <div class="flex justify-between items-start z-10">
                                         <span class="text-xs font-bold text-slate-700 dark:text-slate-200 tracking-tight font-mono">${stack.base}</span>
                                         <span class="text-[10px] text-slate-400 font-mono bg-slate-100 dark:bg-slate-700 px-1 rounded">Top:${stack.occupied}</span>
                                     </div>
-                                    
                                     <div class="flex flex-wrap gap-1 z-10 mt-auto">
-                                        ${stack.tiers.map(t => `
-                                            <button onclick="selectSlot('${t.raw}')" 
-                                                class="flex-1 min-w-[30px] h-7 flex items-center justify-center bg-primary hover:bg-primary-dark text-white text-[10px] font-bold rounded transition-all hover:scale-105 active:scale-95 shadow-sm">
-                                                T${t.tier}
-                                            </button>
-                                        `).join('')}
+                                        ${stack.tiers.map(t => `<button onclick="selectSlot('${t.raw}')" class="flex-1 min-w-[30px] h-7 flex items-center justify-center bg-primary hover:bg-primary-dark text-white text-[10px] font-bold rounded transition-all hover:scale-105 active:scale-95 shadow-sm">T${t.tier}</button>`).join('')}
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
                         <div class="h-px bg-slate-100 dark:bg-slate-800 my-6 w-full last:hidden"></div>
-                    </div>
-                `;
+                    </div>`;
             });
 
             out.innerHTML = html;
-
-            // Animate blocks
-            gsap.fromTo(".animate-block-group", 
-                { y: 20, opacity: 0 },
-                { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power2.out" }
-            );
+            gsap.fromTo(".animate-block-group", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power2.out" });
         }
 
         function setFilter(filter) {
@@ -595,20 +816,10 @@
 
         function selectSlot(fullSlot) {
             const now = new Date();
-            const timeStr = now.getHours().toString().padStart(2, '0') + ":" + 
-                            now.getMinutes().toString().padStart(2, '0') + ":" + 
-                            now.getSeconds().toString().padStart(2, '0');
-
+            const timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0') + ":" + now.getSeconds().toString().padStart(2, '0');
             const matchInfo = currentMatches[0];
             const info = matchInfo ? `${matchInfo.serviceout.toUpperCase()}<br/><span class="text-[10px] text-slate-400">${matchInfo.carrierout.toUpperCase()}</span>` : "-";
-
-            selectedFullSlotsHistory.unshift({
-                time: timeStr,
-                unit: currentUnit || "N/A",
-                fullSlot: fullSlot.trim(),
-                info: info
-            });
-
+            selectedFullSlotsHistory.unshift({ time: timeStr, unit: currentUnit || "N/A", fullSlot: fullSlot.trim(), info: info });
             calculateAvailableSlots(); 
             updateHistoryTable();
         }
@@ -619,45 +830,18 @@
                 tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-8 text-center text-slate-400 italic">No slots selected yet.</td></tr>';
                 return;
             }
-
             tbody.innerHTML = selectedFullSlotsHistory.map((h, i) => `
                 <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${i === 0 ? 'animate-new-row' : ''}">
                     <td class="px-4 py-3 font-mono text-xs text-slate-500">${h.time}</td>
-                    <td class="px-4 py-3">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                            ${h.unit}
-                        </span>
-                        <div class="text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300 mt-1">${h.fullSlot}</div>
-                    </td>
+                    <td class="px-4 py-3"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">${h.unit}</span><div class="text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300 mt-1">${h.fullSlot}</div></td>
                     <td class="px-4 py-3 text-xs text-slate-600 dark:text-slate-400 leading-tight">${h.info}</td>
-                </tr>
-            `).join('');
-
-            if(selectedFullSlotsHistory.length > 0) {
-                gsap.from(".animate-new-row", { x: -20, opacity: 0, duration: 0.3, background: "#f0fdf4" });
-            }
+                </tr>`).join('');
+            if(selectedFullSlotsHistory.length > 0) gsap.from(".animate-new-row", { x: -20, opacity: 0, duration: 0.3, background: "#f0fdf4" });
         }
 
         function renderEmptyState() {
-            document.getElementById('slotDisplay').innerHTML = `
-                <div class="flex flex-col items-center justify-center py-20 text-slate-400">
-                    <span class="material-symbols-outlined text-6xl mb-4 text-slate-200 dark:text-slate-700">dns</span>
-                    <p class="text-sm">Waiting for data input...</p>
-                </div>`;
-            // Reset Preview Grid to Initial State
-            document.querySelector('.table-wrapper').innerHTML = `
-                <table id="previewTable" class="w-full text-left text-xs">
-                    <thead class="bg-slate-50 dark:bg-slate-800/50">
-                        <tr id="pHead">
-                            <th class="px-4 py-3 font-semibold text-slate-500">Key</th>
-                            <th class="px-4 py-3 font-semibold text-slate-500">Value</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pBody">
-                        <tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr>
-                    </tbody>
-                </table>
-            `;
+            document.getElementById('slotDisplay').innerHTML = `<div class="flex flex-col items-center justify-center py-20 text-slate-400"><span class="material-symbols-outlined text-6xl mb-4 text-slate-200 dark:text-slate-700">dns</span><p class="text-sm">Waiting for data input...</p></div>`;
+            document.querySelector('.table-wrapper').innerHTML = `<table id="previewTable" class="w-full text-left text-xs"><thead class="bg-slate-50 dark:bg-slate-800/50"><tr id="pHead"><th class="px-4 py-3 font-semibold text-slate-500">Key</th><th class="px-4 py-3 font-semibold text-slate-500">Value</th></tr></thead><tbody id="pBody"><tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr></tbody></table>`;
             document.getElementById('filterContainer').classList.add('hidden');
         }
 
