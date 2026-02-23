@@ -4,16 +4,16 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>NPCT1 Yard Planning - Replan Analyzer</title>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-    
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-    
+
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -26,8 +26,8 @@
                     colors: {
                         primary: "#10b981", // Emerald 500
                         "primary-dark": "#059669",
-                        surface: "rgba(255, 255, 255, 0.85)", 
-                        "surface-dark": "rgba(15, 23, 42, 0.85)", 
+                        surface: "rgba(255, 255, 255, 0.85)",
+                        "surface-dark": "rgba(15, 23, 42, 0.85)",
                     },
                     fontFamily: {
                         sans: ['"Plus Jakarta Sans"', "sans-serif"],
@@ -46,7 +46,7 @@
             },
         };
     </script>
-    
+
     <style>
         /* --- BACKGROUND IMAGE --- */
         .bg-fixed-image {
@@ -61,7 +61,7 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-        
+
         /* Overlay */
         .bg-overlay {
             position: absolute;
@@ -69,13 +69,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, rgba(248, 250, 252, 0.85), rgba(248, 250, 252, 0.95));
-            backdrop-filter: blur(2px);
+            background: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.2), transparent 45%), radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.18), transparent 42%), linear-gradient(to bottom, rgba(248, 250, 252, 0.88), rgba(241, 245, 249, 0.97));
+            backdrop-filter: blur(4px);
             transition: background 0.3s ease;
         }
-        
+
         .dark .bg-overlay {
-            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95));
+            background: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.15), transparent 50%), radial-gradient(circle at 80% 10%, rgba(56, 189, 248, 0.16), transparent 45%), linear-gradient(to bottom, rgba(2, 6, 23, 0.9), rgba(15, 23, 42, 0.97));
         }
 
         /* --- STABLE CSS ANIMATIONS (REPLACES GSAP FOR HERO) --- */
@@ -83,12 +83,12 @@
             0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
         }
-        
+
         .animate-enter {
             animation: enter-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0; /* Start hidden, animation makes visible */
         }
-        
+
         .delay-100 { animation-delay: 0.1s; }
         .delay-200 { animation-delay: 0.2s; }
 
@@ -105,7 +105,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
-        
+
         .glass-card {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(12px);
@@ -145,7 +145,7 @@
         ::-webkit-scrollbar-thumb { background: rgba(203, 213, 225, 0.5); border-radius: 4px; }
         .dark ::-webkit-scrollbar-thumb { background: rgba(71, 85, 105, 0.5); }
         ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.8); }
-        
+
         /* Filter Button Styles */
         .filter-btn-active {
             background-color: #10b981;
@@ -166,41 +166,72 @@
 
         /* Multi-select active style */
         .multi-filter-active {
-            background-color: #3b82f6; 
+            background-color: #3b82f6;
             color: white;
             border-color: #3b82f6;
             box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
         }
-        
+
         /* Search Bar */
         .hero-input-container {
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-            backdrop-filter: blur(8px);
-            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 16px 48px 0 rgba(15, 23, 42, 0.14);
+            backdrop-filter: blur(14px);
+            background: rgba(255, 255, 255, 0.76);
+            border: 1px solid rgba(255, 255, 255, 0.7);
         }
         .dark .hero-input-container {
-            background: rgba(30, 41, 59, 0.9);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            background: rgba(15, 23, 42, 0.76);
+            box-shadow: 0 16px 48px 0 rgba(2, 6, 23, 0.55);
+            border: 1px solid rgba(148, 163, 184, 0.25);
         }
-        
+
         .hero-input-container:focus-within {
-            transform: scale(1.02);
-            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 24px 58px -5px rgba(15, 23, 42, 0.24);
             border-color: #10b981;
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(255, 255, 255, 0.93);
         }
         .dark .hero-input-container:focus-within {
-            background: rgba(30, 41, 59, 0.98);
+            background: rgba(15, 23, 42, 0.9);
         }
-        
+
+        .futuristic-grid {
+            background-image: linear-gradient(rgba(15, 23, 42, 0.06) 1px, transparent 1px), linear-gradient(to right, rgba(15, 23, 42, 0.06) 1px, transparent 1px);
+            background-size: 36px 36px;
+        }
+        .dark .futuristic-grid {
+            background-image: linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px), linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+        }
+
+        .modal-panel {
+            background: rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
+        }
+        .dark .modal-panel {
+            background: rgba(15, 23, 42, 0.58);
+            border-color: rgba(148, 163, 184, 0.3);
+            box-shadow: 0 24px 80px rgba(2, 6, 23, 0.6);
+        }
+
+        @keyframes modal-fade-up {
+            0% { opacity: 0; transform: translateY(20px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-modal {
+            animation: modal-fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
         /* Trash Animation */
         .trash-btn {
             transform-origin: center bottom;
         }
         .trash-btn:hover {
             animation: trash-shake 0.5s ease-in-out infinite;
-            color: #ef4444; 
+            color: #ef4444;
         }
         @keyframes trash-shake {
             0% { transform: rotate(0deg); }
@@ -256,12 +287,12 @@
                         <h1 class="font-bold text-lg tracking-tight leading-tight text-slate-800 dark:text-slate-100">NPCT1 Yard Planning - Replan Analyzer</h1>
                     </div>
                 </div>
-                
+
                 <div class="flex items-center gap-4">
                     <!-- File Upload Button -->
                     <div class="relative group">
                         <input type="file" id="excelFile" accept=".xlsx" class="hidden" onchange="handleFile(event)">
-                        <button id="uploadBtn" onclick="document.getElementById('excelFile').click()" 
+                        <button id="uploadBtn" onclick="document.getElementById('excelFile').click()"
                             class="flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-700/80 backdrop-blur-md rounded-lg text-sm font-medium transition-all border border-white/40 dark:border-white/10 shadow-sm">
                             <span id="uploadIcon" class="material-symbols-rounded text-base">upload_file</span>
                             <span id="uploadLabel">Upload UnitListAll.xlsx</span>
@@ -282,12 +313,12 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow w-full space-y-8">
-        
+    <main class="flex-grow w-full space-y-8 futuristic-grid">
+
         <!-- SECTION 1: HERO & INPUT -->
-        <section class="relative pb-16 pt-12 overflow-hidden">
-            
-            <div class="max-w-4xl mx-auto px-4 relative z-10 text-center">
+        <section class="relative pb-12 pt-8 overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
+
+            <div class="max-w-6xl mx-auto px-4 relative z-10 text-center w-full">
                 <!-- Hero Text -->
                 <div class="mb-8 space-y-3 animate-enter">
                     <span class="inline-block py-1 px-3 rounded-full bg-emerald-100/50 dark:bg-emerald-900/40 backdrop-blur-sm text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider border border-emerald-200/50 dark:border-emerald-700/50 shadow-sm">
@@ -302,28 +333,28 @@
                 </div>
 
                 <!-- GLASS SEARCH BAR STYLE INPUT -->
-                <div class="relative max-w-2xl mx-auto animate-enter delay-100">
-                    <div class="hero-input-container relative flex items-center rounded-full border border-white/50 dark:border-white/10 p-2 pl-6">
-                        
+                <div class="relative max-w-5xl mx-auto animate-enter delay-100">
+                    <div class="hero-input-container relative flex items-start rounded-3xl p-4 sm:p-6">
+
                         <!-- Search/Paste Icon -->
-                        <span class="material-symbols-rounded text-slate-400 text-2xl mr-3 flex-shrink-0">search_check</span>
-                        
+                        <span class="material-symbols-rounded text-slate-400 text-3xl mr-4 mt-2 flex-shrink-0">search_check</span>
+
                         <!-- The Input (Actually Textarea disguised) -->
-                        <textarea id="rawInput" 
-                            class="w-full h-10 bg-transparent border-none focus:ring-0 p-0 text-base text-slate-700 dark:text-slate-200 placeholder-slate-400 resize-none font-mono leading-10"
-                            placeholder="Paste Header & Data here (Ctrl+V)..." 
+                        <textarea id="rawInput"
+                            class="w-full min-h-[200px] sm:min-h-[240px] bg-transparent border-none focus:ring-0 p-0 text-base text-slate-700 dark:text-slate-200 placeholder-slate-400 resize-none font-mono leading-7"
+                            placeholder="Paste Header & Data here (Ctrl+V)..."
                             oninput="analyze()"
-                            rows="1"
+                            rows="8"
                             spellcheck="false"></textarea>
 
                         <!-- Trash Button with Animation -->
-                        <div class="ml-2 pl-2 border-l border-slate-200/50 dark:border-slate-700/50 h-8 flex items-center">
+                        <div class="ml-2 pl-3 border-l border-slate-200/50 dark:border-slate-700/50 h-full flex items-start pt-1">
                             <button onclick="clearInput()" class="trash-btn p-2 rounded-full text-slate-400 hover:bg-red-50/50 dark:hover:bg-red-900/20 transition-all group" title="Clear Data">
                                 <span class="material-symbols-rounded text-xl group-hover:text-red-500 transition-colors">delete</span>
                             </button>
                         </div>
                     </div>
-                    
+
                     <!-- Helper Text -->
                     <div class="mt-3 flex justify-center gap-4 text-xs text-slate-500 dark:text-slate-400 font-medium animate-enter delay-200">
                         <span class="flex items-center gap-1 backdrop-blur-sm bg-white/30 dark:bg-black/20 px-2 py-0.5 rounded-md"><span class="material-symbols-rounded text-[14px]">content_paste</span> Paste Row</span>
@@ -334,55 +365,6 @@
         </section>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 pb-20">
-            <!-- 2. DATA VISUALIZATION / COMPARISON -->
-            <div class="glass-card rounded-2xl p-6 reveal-on-scroll">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                        <span class="material-symbols-rounded text-lg">compare_arrows</span> Comparison Data
-                    </h2>
-                    <span class="text-xs text-slate-400 bg-white/50 dark:bg-black/20 px-2 py-1 rounded backdrop-blur-sm">Live Parsed Data</span>
-                </div>
-                <div class="table-wrapper overflow-x-auto rounded-lg border border-slate-200/50 dark:border-slate-700/50">
-                    <table id="previewTable" class="w-full text-left text-xs">
-                        <thead class="bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm">
-                            <tr id="pHead">
-                                <th class="px-4 py-3 font-semibold text-slate-500">Key</th>
-                                <th class="px-4 py-3 font-semibold text-slate-500">Value</th>
-                            </tr>
-                        </thead>
-                        <tbody id="pBody">
-                            <tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 3. RESULTS / RECOMMENDED SLOTS -->
-            <div class="glass-card rounded-2xl p-6 min-h-[300px] reveal-on-scroll">
-                
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 border-b border-slate-200/50 dark:border-slate-700/50 pb-4 gap-4">
-                    <div>
-                        <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-1 drop-shadow-sm">Recommended Slots</h2>
-                        <p class="text-sm text-slate-500">Grouped by Block • Filtered only the available slot</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="px-3 py-1 rounded-full bg-emerald-100/60 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-sm shadow-sm">
-                            TIER &le; 5
-                        </span>
-                    </div>
-                </div>
-
-                <!-- BLOCK FILTERS (Single Select) -->
-                <div id="filterContainer" class="flex flex-wrap gap-2 mb-6 hidden"></div>
-
-                <!-- Slot Grid Container -->
-                <div id="slotDisplay" class="space-y-8">
-                    <div class="flex flex-col items-center justify-center py-20 text-slate-400">
-                        <span class="material-symbols-rounded text-6xl mb-4 text-slate-300 dark:text-slate-600 opacity-50">dns</span>
-                        <p class="text-sm">Waiting for data input...</p>
-                    </div>
-                </div>
-            </div>
 
             <!-- 4. HISTORY CARD -->
             <div class="glass-card rounded-2xl p-6 reveal-on-scroll">
@@ -422,11 +404,11 @@
                             Carrier Export Analysis
                         </h2>
                         <p class="text-sm text-slate-500 max-w-lg font-medium">
-                            Visualize container density for <strong class="text-slate-700 dark:text-slate-300">Export & Transhipment</strong> moves. 
+                            Visualize container density for <strong class="text-slate-700 dark:text-slate-300">Export & Transhipment</strong> moves.
                             Calculated capacity: 30 units per Slot.
                         </p>
                     </div>
-                    
+
                     <!-- Carrier Selector (Buttons) -->
                     <div class="w-full md:w-auto">
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Select Carrier Out</label>
@@ -455,7 +437,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Carrier Block Filters (Multi-select) -->
                 <div id="carrierBlockFilterContainer" class="flex flex-wrap gap-2 mb-6 hidden"></div>
 
@@ -469,6 +451,70 @@
         </div>
 
     </main>
+
+    <!-- Analysis Modal -->
+    <div id="analysisModal" class="fixed inset-0 z-[70] hidden">
+        <div id="analysisBackdrop" class="absolute inset-0 bg-slate-900/45 backdrop-blur-sm"></div>
+        <div class="relative min-h-full flex items-center justify-center p-4 sm:p-8">
+            <div id="analysisPanel" class="modal-panel w-full max-w-6xl max-h-[90vh] rounded-3xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-white/20 dark:border-white/10 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">Comparison & Recommended Slot</h2>
+                        <p class="text-xs text-slate-600 dark:text-slate-300">Auto-generated after paste data.</p>
+                    </div>
+                    <button onclick="closeAnalysisModal()" class="h-9 w-9 rounded-full bg-white/60 dark:bg-slate-800/70 hover:bg-white dark:hover:bg-slate-700 transition-colors flex items-center justify-center">
+                        <span class="material-symbols-rounded text-slate-600 dark:text-slate-200">close</span>
+                    </button>
+                </div>
+                <div class="p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-72px)] space-y-6">
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                                <span class="material-symbols-rounded text-lg">compare_arrows</span> Comparison Data
+                            </h2>
+                            <span class="text-xs text-slate-400 bg-white/50 dark:bg-black/20 px-2 py-1 rounded backdrop-blur-sm">Live Parsed Data</span>
+                        </div>
+                        <div id="previewContainer" class="table-wrapper overflow-x-auto rounded-lg border border-slate-200/50 dark:border-slate-700/50">
+                            <table id="previewTable" class="w-full text-left text-xs">
+                                <thead class="bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm">
+                                    <tr id="pHead">
+                                        <th class="px-4 py-3 font-semibold text-slate-500">Key</th>
+                                        <th class="px-4 py-3 font-semibold text-slate-500">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pBody">
+                                    <tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6 min-h-[300px]">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 border-b border-slate-200/50 dark:border-slate-700/50 pb-4 gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-1 drop-shadow-sm">Recommended Slots</h2>
+                                <p class="text-sm text-slate-500">Grouped by Block • Filtered only the available slot</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="px-3 py-1 rounded-full bg-emerald-100/60 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-sm shadow-sm">
+                                    TIER &le; 5
+                                </span>
+                            </div>
+                        </div>
+
+                        <div id="filterContainer" class="flex flex-wrap gap-2 mb-6 hidden"></div>
+
+                        <div id="slotDisplay" class="space-y-8">
+                            <div class="flex flex-col items-center justify-center py-20 text-slate-400">
+                                <span class="material-symbols-rounded text-6xl mb-4 text-slate-300 dark:text-slate-600 opacity-50">dns</span>
+                                <p class="text-sm">Waiting for data input...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="border-t border-white/20 dark:border-white/5 mt-auto glass-panel py-6">
@@ -487,7 +533,7 @@
     <script>
         // Init GSAP
         gsap.registerPlugin();
-        
+
         // --- SCROLL ANIMATION OBSERVER ---
         const initScrollAnimations = () => {
             const observerOptions = {
@@ -509,26 +555,48 @@
                 observer.observe(el);
             });
         };
-        
+
         // --- INITIAL ANIMATION ---
         const animateItems = () => {
             // Replaced GSAP with CSS Animation (.animate-enter) for stability on the Hero Input
-            
+
             // Init Scroll Observer
             initScrollAnimations();
         };
-        
+
         // FIX: Use DOMContentLoaded instead of load for faster perceived performance (don't wait for background image)
         document.addEventListener('DOMContentLoaded', animateItems);
 
         // --- CORE LOGIC ---
         let db = [];
-        let selectedFullSlotsHistory = []; 
+        let selectedFullSlotsHistory = [];
         let currentMatches = [];
         let currentUnit = "";
-        let activeBlockFilter = 'ALL'; 
+        let activeBlockFilter = 'ALL';
         let activeCarrier = null;
-        let activeCarrierBlockFilters = new Set(); 
+        let activeCarrierBlockFilters = new Set();
+        let isModalOpen = false;
+
+
+        function openAnalysisModal() {
+            const modal = document.getElementById('analysisModal');
+            const panel = document.getElementById('analysisPanel');
+            if (!modal || isModalOpen) return;
+            modal.classList.remove('hidden');
+            panel.classList.remove('animate-modal');
+            void panel.offsetWidth;
+            panel.classList.add('animate-modal');
+            document.body.classList.add('overflow-hidden');
+            isModalOpen = true;
+        }
+
+        function closeAnalysisModal() {
+            const modal = document.getElementById('analysisModal');
+            if (!modal || !isModalOpen) return;
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            isModalOpen = false;
+        }
 
         function normalize(str) {
             if (str === undefined || str === null) return "";
@@ -536,7 +604,7 @@
                 .replace(/_x000D_/g, '')
                 .replace(/[\r\n\t]/g, ' ')
                 .replace(/,/g, '.')
-                .replace(/\s*-\s*/g, '-') 
+                .replace(/\s*-\s*/g, '-')
                 .replace(/\s+/g, ' ')
                 .trim()
                 .toLowerCase();
@@ -549,12 +617,12 @@
         function handleFile(e) {
             const file = e.target.files[0];
             if(!file) return;
-            
+
             const btn = document.getElementById('uploadBtn');
             const btnLabel = document.getElementById('uploadLabel');
             const btnIcon = document.getElementById('uploadIcon');
             const statusEl = document.getElementById('fileStatus');
-            
+
             // Loading State Style
             btnLabel.innerText = "Reading File...";
             btn.className = "flex items-center gap-2 px-4 py-2 bg-yellow-100/80 text-yellow-700 rounded-lg text-sm font-bold border border-yellow-300 shadow-sm animate-pulse cursor-wait backdrop-blur-sm";
@@ -566,7 +634,7 @@
                     const data = new Uint8Array(evt.target.result);
                     const wb = XLSX.read(data, { type: 'array' });
                     const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-                    
+
                     db = json.map(row => {
                         let cleanRow = {};
                         for (let key in row) {
@@ -586,9 +654,9 @@
                     statusEl.innerText = `Ready: ${db.length} rows`;
                     statusEl.classList.remove('text-slate-600', 'dark:text-slate-400');
                     statusEl.classList.add('text-primary');
-                    
+
                     gsap.fromTo(btn, {scale: 0.95}, {scale: 1, duration: 0.3, ease: "back.out(2)"});
-                    
+
                     initCarrierAnalysis();
                     analyze();
                 } catch (err) {
@@ -604,20 +672,20 @@
         // --- CARRIER ANALYSIS LOGIC ---
         function initCarrierAnalysis() {
             const container = document.getElementById('carrierButtonContainer');
-            const carrierValidation = {}; 
-            
+            const carrierValidation = {};
+
             const validMoves = ['export', 'transhipment', 'tsh'];
 
             db.forEach(row => {
                 let move = row.move || "";
                 let carrier = row.carrierout || "";
-                let slot = row._raw_slot || ""; 
-                
+                let slot = row._raw_slot || "";
+
                 if (carrier && carrier !== '-' && validMoves.some(m => move.includes(m))) {
                     let cName = row._raw_carrier || carrier.toUpperCase();
-                    
+
                     if (!carrierValidation[cName]) {
-                        carrierValidation[cName] = { hasNon8: false }; 
+                        carrierValidation[cName] = { hasNon8: false };
                     }
                     if (!slot.startsWith('8')) {
                         carrierValidation[cName].hasNon8 = true;
@@ -628,7 +696,7 @@
             const sortedCarriers = Object.keys(carrierValidation)
                 .filter(c => carrierValidation[c].hasNon8 === true)
                 .sort();
-            
+
             if (sortedCarriers.length === 0) {
                 container.innerHTML = '<span class="text-xs text-red-400 italic">No valid Export/Transhipment carriers found (excluding Block 8).</span>';
                 return;
@@ -637,7 +705,7 @@
             let html = "";
             sortedCarriers.forEach(c => {
                 html += `
-                    <button onclick="selectCarrier('${c}')" 
+                    <button onclick="selectCarrier('${c}')"
                         id="btn-carrier-${normalize(c)}"
                         class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all filter-btn-inactive hover:border-slate-400 dark:hover:border-slate-500">
                         ${c}
@@ -652,9 +720,9 @@
             allBtns.forEach(btn => {
                 btn.className = "px-3 py-1.5 text-xs font-bold rounded-lg border transition-all filter-btn-inactive hover:border-slate-400 dark:hover:border-slate-500";
             });
-            
+
             if (activeCarrier === selectedCarrier) {
-                activeCarrier = null; 
+                activeCarrier = null;
                 document.getElementById('carrierGridContainer').innerHTML = '<div class="py-12 text-center text-slate-400 glass-card rounded-xl border border-dashed border-slate-300 dark:border-slate-700">Select a carrier to view distribution</div>';
                 document.getElementById('carrierStats').classList.add('hidden');
                 document.getElementById('carrierBlockFilterContainer').classList.add('hidden');
@@ -663,7 +731,7 @@
 
             activeCarrier = selectedCarrier;
             document.getElementById(`btn-carrier-${normalize(selectedCarrier)}`).className = "px-3 py-1.5 text-xs font-bold rounded-lg border transition-all filter-btn-active transform scale-105";
-            
+
             activeCarrierBlockFilters.clear();
             renderCarrierAnalysis();
         }
@@ -674,7 +742,7 @@
             const gridContainer = document.getElementById('carrierGridContainer');
             const stats = document.getElementById('carrierStats');
             const blockFilterContainer = document.getElementById('carrierBlockFilterContainer');
-            
+
             const validMoves = ['export', 'transhipment', 'tsh'];
             const carrierData = db.filter(row => {
                 let rCarrier = row._raw_carrier || row.carrierout;
@@ -688,11 +756,11 @@
             carrierData.forEach(row => {
                 let slot = row._raw_slot || "";
                 if (slot.includes('-')) {
-                    let parts = slot.split('-'); 
+                    let parts = slot.split('-');
                     if (parts.length >= 2) {
                         let blockName = parts[0];
                         let bayKey = parts[1];
-                        
+
                         if (!blocks[blockName]) blocks[blockName] = {};
                         if (!blocks[blockName][bayKey]) blocks[blockName][bayKey] = 0;
                         blocks[blockName][bayKey]++;
@@ -701,25 +769,25 @@
             });
 
             const availableBlocks = Object.keys(blocks).sort();
-            
+
             if (availableBlocks.length > 0) {
                 let filterHtml = `
-                    <button onclick="toggleCarrierBlockFilter('ALL')" 
+                    <button onclick="toggleCarrierBlockFilter('ALL')"
                         class="px-3 py-1 text-[10px] font-bold rounded-md border transition-all ${activeCarrierBlockFilters.size === 0 ? 'filter-btn-active' : 'filter-btn-inactive'}">
                         ALL
                     </button>
                 `;
-                
+
                 availableBlocks.forEach(b => {
                     const isActive = activeCarrierBlockFilters.has(b);
                     filterHtml += `
-                        <button onclick="toggleCarrierBlockFilter('${b}')" 
+                        <button onclick="toggleCarrierBlockFilter('${b}')"
                             class="px-3 py-1 text-[10px] font-bold rounded-md border transition-all ${isActive ? 'multi-filter-active' : 'filter-btn-inactive'}">
                             ${b}
                         </button>
                     `;
                 });
-                
+
                 blockFilterContainer.innerHTML = filterHtml;
                 blockFilterContainer.classList.remove('hidden');
             } else {
@@ -728,7 +796,7 @@
 
             let totalBays = 0;
             Object.values(blocks).forEach(b => totalBays += Object.keys(b).length);
-            
+
             document.getElementById('statTotal').innerText = totalUnits;
             document.getElementById('statBays').innerText = totalBays;
             stats.classList.remove('hidden');
@@ -747,7 +815,7 @@
             displayBlocks.forEach(blockName => {
                 let bayData = blocks[blockName];
                 let sortedBays = Object.keys(bayData).sort((a,b) => b.localeCompare(a, undefined, {numeric: true}));
-                
+
                 html += `
                     <div class="animate-carrier-group glass-card rounded-xl p-4 shadow-sm">
                         <div class="flex items-center gap-2 mb-3 border-b border-slate-100 dark:border-slate-700 pb-2">
@@ -759,13 +827,13 @@
                                 ${sortedBays.length} Slots
                             </span>
                         </div>
-                        
+
                         <div class="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 lg:grid-cols-14 gap-1">
                             ${sortedBays.map(bay => {
                                 let count = bayData[bay];
                                 let percentage = Math.min((count / 30) * 100, 100);
                                 let colorClass = percentage < 50 ? 'bg-emerald-500' : (percentage < 80 ? 'bg-yellow-500' : 'bg-red-500');
-                                
+
                                 return `
                                     <div class="bg-slate-50/50 dark:bg-slate-800/30 rounded border border-slate-100/50 dark:border-slate-700/50 p-0.5 flex flex-col gap-0 items-center justify-center hover:shadow-sm transition-all h-full backdrop-blur-sm" title="${count} Units in Slot ${bay}">
                                         <span class="text-[10px] font-bold text-slate-700 dark:text-slate-200 leading-tight">${bay}</span>
@@ -782,7 +850,7 @@
             });
 
             gridContainer.innerHTML = html;
-            
+
             gsap.from(".animate-carrier-group", {
                 y: 10,
                 opacity: 0,
@@ -807,13 +875,15 @@
         }
 
         // --- EXISTING REPLAN LOGIC ---
-        
+
         function analyze() {
             const text = document.getElementById('rawInput').value.trim();
             if (!text || db.length === 0) {
                 renderEmptyState();
                 return;
             }
+
+            openAnalysisModal();
 
             const lines = text.split(/\r?\n/);
             const headers = lines[0].split('\t').map(h => h.trim());
@@ -830,7 +900,7 @@
                         <span class="text-sm font-mono font-medium text-slate-700 dark:text-slate-200 truncate" title="${val}">${val}</span>
                     </div>`;
             });
-            document.getElementById('previewTable').parentElement.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-8 gap-3">${gridContent}</div>`;
+            document.getElementById('previewContainer').innerHTML = `<div class="grid grid-cols-1 md:grid-cols-8 gap-3">${gridContent}</div>`;
 
             const findVal = (name) => {
                 const cleanName = cleanKey(name);
@@ -857,7 +927,7 @@
                 const matchLen = item.unitlength === target.len;
                 const matchType = item.conttype === target.type;
                 const matchHeight = item.unitheight === target.height;
-                
+
                 const p1 = parseInt(item.wtcl);
                 const p2 = parseInt(target.wt);
                 const matchWt = (item.wtcl === target.wt) || (!isNaN(p1) && !isNaN(p2) && p1 === p2);
@@ -871,7 +941,7 @@
         function calculateAvailableSlots() {
             const out = document.getElementById('slotDisplay');
             const filterContainer = document.getElementById('filterContainer');
-            
+
             if (currentMatches.length === 0) {
                 out.innerHTML = `
                     <div class="p-6 bg-red-50/50 dark:bg-red-900/20 border border-red-100 dark:border-red-900 rounded-xl text-center backdrop-blur-sm">
@@ -889,7 +959,7 @@
                 if (fullSlotRaw.includes('-')) {
                     let p = fullSlotRaw.split('-');
                     let tier = parseInt(p.pop());
-                    let base = p.join('-'); 
+                    let base = p.join('-');
                     if (!isNaN(tier)) {
                         if (!stackInfo[base]) stackInfo[base] = 0;
                         if (tier > stackInfo[base]) stackInfo[base] = tier;
@@ -897,7 +967,7 @@
                 }
             });
 
-            let stacks = []; 
+            let stacks = [];
             const usedFullSlots = new Set(selectedFullSlotsHistory.map(h => h.fullSlot.trim()));
 
             Object.keys(stackInfo).forEach(base => {
@@ -929,7 +999,7 @@
             }
 
             const blocks = [...new Set(stacks.map(s => s.block))].sort();
-            
+
             if (blocks.length > 0) {
                 let filterHtml = `<button onclick="setFilter('ALL')" class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${activeBlockFilter === 'ALL' ? 'filter-btn-active' : 'filter-btn-inactive'}">ALL</button>`;
                 blocks.forEach(b => {
@@ -941,7 +1011,7 @@
 
             const displayBlocks = activeBlockFilter === 'ALL' ? blocks : blocks.filter(b => b === activeBlockFilter);
             let html = "";
-            
+
             displayBlocks.forEach(blockName => {
                 const blockStacks = stacks.filter(s => s.block === blockName).sort((a,b) => a.base.localeCompare(b.base));
                 if (blockStacks.length === 0) return;
@@ -986,7 +1056,7 @@
             const matchInfo = currentMatches[0];
             const info = matchInfo ? `${matchInfo.serviceout.toUpperCase()}<br/><span class="text-[10px] text-slate-400">${matchInfo.carrierout.toUpperCase()}</span>` : "-";
             selectedFullSlotsHistory.unshift({ time: timeStr, unit: currentUnit || "N/A", fullSlot: fullSlot.trim(), info: info });
-            
+
             const tempInput = document.createElement("input");
             tempInput.value = fullSlot.trim();
             document.body.appendChild(tempInput);
@@ -995,7 +1065,7 @@
             document.body.removeChild(tempInput);
             showToast(`Copied: ${fullSlot.trim()}`);
 
-            calculateAvailableSlots(); 
+            calculateAvailableSlots();
             updateHistoryTable();
         }
 
@@ -1004,9 +1074,9 @@
             const toastMsg = document.getElementById("toastMsg");
             toastMsg.innerText = msg;
             toast.className = "toast show";
-            
-            setTimeout(function(){ 
-                toast.className = toast.className.replace("show", ""); 
+
+            setTimeout(function(){
+                toast.className = toast.className.replace("show", "");
             }, 3000);
         }
 
@@ -1027,7 +1097,8 @@
 
         function renderEmptyState() {
             document.getElementById('slotDisplay').innerHTML = `<div class="flex flex-col items-center justify-center py-20 text-slate-400"><span class="material-symbols-rounded text-6xl mb-4 text-slate-300 dark:text-slate-600 opacity-50">dns</span><p class="text-sm">Waiting for data input...</p></div>`;
-            document.querySelector('.table-wrapper').innerHTML = `<table id="previewTable" class="w-full text-left text-xs"><thead class="bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm"><tr id="pHead"><th class="px-4 py-3 font-semibold text-slate-500">Key</th><th class="px-4 py-3 font-semibold text-slate-500">Value</th></tr></thead><tbody id="pBody"><tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr></tbody></table>`;
+            document.getElementById('previewContainer').innerHTML = `<table id="previewTable" class="w-full text-left text-xs"><thead class="bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm"><tr id="pHead"><th class="px-4 py-3 font-semibold text-slate-500">Key</th><th class="px-4 py-3 font-semibold text-slate-500">Value</th></tr></thead><tbody id="pBody"><tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr></tbody></table>`;
+            closeAnalysisModal();
             document.getElementById('filterContainer').classList.add('hidden');
         }
 
@@ -1035,10 +1106,16 @@
             // Animasi Trash Can saat diklik
             const btn = document.querySelector('.trash-btn');
             gsap.to(btn, { rotation: 360, duration: 0.5, ease: "back.out(1.7)" });
-            
+
             document.getElementById('rawInput').value = "";
             renderEmptyState();
         }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeAnalysisModal();
+        });
+
+        document.getElementById('analysisBackdrop').addEventListener('click', closeAnalysisModal);
 
         function clearHistory() {
             if(confirm("Clear all history?")) {
