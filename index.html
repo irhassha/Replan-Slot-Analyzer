@@ -56,7 +56,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background-image: url('https://cms.pthms.com/file/get/blogs/content/2025/03/20250311_114531_5110_beritamaret301.webp');
+            background-image: url('https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -69,13 +69,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.2), transparent 45%), radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.18), transparent 42%), linear-gradient(to bottom, rgba(248, 250, 252, 0.88), rgba(241, 245, 249, 0.97));
-            backdrop-filter: blur(4px);
+            background: linear-gradient(to bottom, rgba(248, 250, 252, 0.26), rgba(248, 250, 252, 0.36));
+            backdrop-filter: blur(1.5px);
             transition: background 0.3s ease;
         }
 
         .dark .bg-overlay {
-            background: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.15), transparent 50%), radial-gradient(circle at 80% 10%, rgba(56, 189, 248, 0.16), transparent 45%), linear-gradient(to bottom, rgba(2, 6, 23, 0.9), rgba(15, 23, 42, 0.97));
+            background: linear-gradient(to bottom, rgba(2, 6, 23, 0.34), rgba(15, 23, 42, 0.45));
         }
 
         /* --- STABLE CSS ANIMATIONS (REPLACES GSAP FOR HERO) --- */
@@ -318,7 +318,7 @@
         <!-- SECTION 1: HERO & INPUT -->
         <section class="relative pb-12 pt-8 overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
 
-            <div class="max-w-6xl mx-auto px-4 relative z-10 text-center w-full pt-14 sm:pt-20">
+            <div class="max-w-6xl mx-auto px-4 relative z-10 text-center w-full pt-8 sm:pt-10">
                 <!-- Hero Text -->
                 <div class="mb-8 space-y-3 animate-enter">
                     <span class="inline-block py-1 px-3 rounded-full bg-emerald-100/50 dark:bg-emerald-900/40 backdrop-blur-sm text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider border border-emerald-200/50 dark:border-emerald-700/50 shadow-sm">
@@ -333,18 +333,18 @@
                 </div>
 
                 <!-- GLASS SEARCH BAR STYLE INPUT -->
-                <div class="relative max-w-4xl mx-auto animate-enter delay-100">
-                    <div class="hero-input-container relative flex items-start rounded-3xl p-4 sm:p-5">
+                <div class="relative max-w-3xl mx-auto animate-enter delay-100">
+                    <div class="hero-input-container relative flex items-start rounded-3xl p-3.5 sm:p-4">
 
                         <!-- Search/Paste Icon -->
                         <span class="material-symbols-rounded text-slate-400 text-3xl mr-4 mt-2 flex-shrink-0">search_check</span>
 
                         <!-- The Input (Actually Textarea disguised) -->
                         <textarea id="rawInput"
-                            class="w-full min-h-[90px] sm:min-h-[110px] bg-transparent border-none focus:ring-0 p-0 text-base text-slate-700 dark:text-slate-200 placeholder-slate-400 resize-none font-mono leading-7"
+                            class="w-full min-h-[62px] sm:min-h-[72px] bg-transparent border-none focus:ring-0 p-0 text-sm sm:text-base text-slate-700 dark:text-slate-200 placeholder-slate-400 resize-none font-mono leading-6"
                             placeholder="Paste Header & Data here (Ctrl+V)..."
                             oninput="analyze()"
-                            rows="3"
+                            rows="2"
                             spellcheck="false"></textarea>
 
                         <!-- Trash Button with Animation -->
